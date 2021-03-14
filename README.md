@@ -9,6 +9,10 @@ luberth some changes
 
 \<meta http-equiv="refresh" content="60"\> reload htm page every 60 seconds
 
+progres bar on bottom to show when page reloads
+
+-
+
 changed time server to time.google.com  because of jumps to 1970 when i log each second
 
 time should not be read every time from time server
