@@ -24,6 +24,13 @@ sometimes jumps to unixtime 1970 wich mess up the graph == not nice
 
 fixed some compile errors for main ino
 
+    // subtract seventy years: 
+    unsigned long epoch = (secsSince1900 - seventyYears)+3600; //time offset 3600seconds for my location amsterdam europe 
+    
+    // return Unix time:
+    
+    return epoch;
+
 
 ---------------------
 
