@@ -24,4 +24,6 @@ fixed some compile errors for main ino
 
 first chart maybe nice for https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
 
+pee measurement howmuch and when ;-)
+
 <img src="https://github.com/ldijkman/super-graphing-data-logger/blob/master/images/first_chart.jpg" width="50%" heigth="50%">
