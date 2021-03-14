@@ -5,7 +5,7 @@ An arduino sketch for my old super graphing data logger project.
 
 luberth some changes
 
-<meta http-equiv="refresh" content="60"> reload htm page every 60 seconds
+\<meta http-equiv="refresh" content="60"\> reload htm page every 60 seconds
 
 ---------------------
 
