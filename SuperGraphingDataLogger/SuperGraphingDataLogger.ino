@@ -47,17 +47,17 @@
 #include <string.h>
 #include <Time.h>
 #include <EEPROM.h>
-#include <EEPROMAnything.h>
+#include "EEPROMAnything.h"
 #include <avr/pgmspace.h>
 
 /************ ETHERNET STUFF ************/
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x4C, 0x64 };
-//byte ip[] = { 192,168,1, 100 };
+byte ip[] = { 192,168,178,15 };
 EthernetServer server(80);
 
 /************** NTP STUFF ***************/
 unsigned int localPort = 8888;          // local port to listen for UDP packets
-IPAddress timeServer(128, 138, 140, 44);//NIST time server IP address: for more info
+IPAddress timeServer(216,239,35,8);//time.google.com NIST time server IP address: for more info
                                         //see http://tf.nist.gov/tf-cgi/servers.cgi
 
 const int NTP_PACKET_SIZE= 48; //NTP time stamp is in the first 48 bytes of the message
@@ -67,7 +67,7 @@ EthernetUDP Udp;
 /*** DATA LOGGER AND TIMER CONTROLS ****/
 const int analogPin = 0;
 unsigned long lastIntervalTime = 0; //The time the last measurement occured.
-#define MEASURE_INTERVAL 600000     //10 minute intervals between measurements (in ms)
+#define MEASURE_INTERVAL 1000     //10 minute intervals between measurements (in ms)
 unsigned long newFileTime;          //The time at which we should create a new week's file
 #define FILE_INTERVAL 604800        //One week worth of seconds
 
@@ -105,10 +105,13 @@ void HtmlHeaderOK(EthernetClient client) {
   
   
 // Strings stored in flash mem for the Html 404 Header
-const prog_char Header404_0[] PROGMEM = "HTTP/1.1 404 Not Found";     //
-const prog_char Header404_1[] PROGMEM = "Content-Type: text/html";    //
-const prog_char Header404_2[] PROGMEM = "";                           //
-const prog_char Header404_3[] PROGMEM = "<h2>File Not Found!</h2>"; 
+const char Header404_0[] PROGMEM = "HTTP/1.1 404 Not Found";     //
+const char Header404_1[] PROGMEM = "Content-Type: text/html";    //
+const char Header404_2[] PROGMEM = "";                           //
+const char Header404_3[] PROGMEM = "<h2>File Not Found!</h2>"; 
+
+//const char HeaderOK_0[] PROGMEM = "HTTP/1.1 200 OK";
+
 
 // A table of pointers to the flash memory strings for the header
 const char* const Header404_table[] PROGMEM = {   
@@ -138,19 +141,19 @@ void setup() {
   
   // see if the card is present and can be initialized:
   if (!SD.begin(4)) {
-    //Serial.println("Card failed, or not present");
+    Serial.println("Card failed, or not present");
     // don't do anything more:
     return;
   }
-  //Serial.println("card initialized.");
+  Serial.println("card initialized.");
   
   // The SD card is working, start the server and ethernet related stuff!
   if (Ethernet.begin(mac) == 0) {
-    //Serial.println("Failed to configure Ethernet using DHCP");
+    Serial.println("Failed to configure Ethernet using DHCP");
     // don't do anything more:
     return;
   }
-  //Serial.println("DHCP configured!");
+  Serial.println("DHCP configured!");
 
   server.begin();
   Udp.begin(localPort);
