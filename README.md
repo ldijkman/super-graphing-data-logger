@@ -18,3 +18,7 @@ fixed some compile errors for main ino
 
 For detailed instructions on how to set this project up, please see the associated wordpress post:
 http://everettsprojects.com/2012/12/31/arduino-super-graphing-data-logger/
+
+first chart
+
+<img src="https://github.com/ldijkman/super-graphing-data-logger/blob/master/images/first_chart.jpg" width="50%" heigth="50%">
