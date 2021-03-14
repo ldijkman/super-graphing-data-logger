@@ -13,6 +13,8 @@ changed time server to time.google.com  because of jumps to 1970 when i log each
 
 time should not be read every time from time server
 
+sometimes jumps to unixtime 1970 wich mess up the graph == not nice
+
 fixed some compile errors for main ino
 
 
