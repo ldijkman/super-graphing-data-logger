@@ -9,7 +9,7 @@ luberth some changes
 
 \<meta http-equiv="refresh" content="60"\> reload htm page every 60 seconds
 
-progres bar on bottom to show when page reloads
+progres bar on bottom of html page to show when page reloads
 
 -
 
