@@ -1,3 +1,6 @@
+--------------
+# maybe online live chart at http://arduino.tk:8888/
+--------------------
 # super-graphing-data-logger
 An arduino sketch for my old super graphing data logger project.
 
@@ -31,3 +34,8 @@ first chart maybe nice for https://github.com/ldijkman/Arduino-Drain-Rain-Irriga
 pee measurement howmuch and when ;-)
 
 <img src="https://github.com/ldijkman/super-graphing-data-logger/blob/master/images/first_chart.jpg" width="50%" heigth="50%">
+
+
+--------------
+# maybe online live chart at http://arduino.tk:8888/
+--------------------
