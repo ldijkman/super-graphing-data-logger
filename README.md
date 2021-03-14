@@ -7,6 +7,13 @@ luberth some changes
 
 \<meta http-equiv="refresh" content="60"\> reload htm page every 60 seconds
 
+changed time server to time.google.com  because of jumps to 1970 when i log each second
+
+time should not be read every time from time server
+
+fixed some compile errors for main ino
+
+
 ---------------------
 
 For detailed instructions on how to set this project up, please see the associated wordpress post:
