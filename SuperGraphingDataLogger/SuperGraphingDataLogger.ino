@@ -52,7 +52,7 @@
 
 /************ ETHERNET STUFF ************/
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x4C, 0x64 };
-byte ip[] = { 192, 168, 178, 15 };
+byte ip[] = { 192, 168, 178, 16 };
 EthernetServer server(80);
 
 /************** NTP STUFF ***************/
@@ -134,7 +134,7 @@ void HtmlHeader404(EthernetClient client) {
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(10, OUTPUT);          // set the SS pin as an output (necessary!)
   digitalWrite(10, HIGH);       // but turn off the W5100 chip!
@@ -154,6 +154,8 @@ void setup() {
     return;
   }
   Serial.println("DHCP configured!");
+  Serial.print("IP-address: ");
+  Serial.println(Ethernet.localIP());
 
   server.begin();
   Udp.begin(localPort);
@@ -312,8 +314,8 @@ void loop() {
       strcat(dataString, timeStr);
       strcat(dataString, ",");
       strcat(dataString, sensorStr);
-      Serial.print("timeStr "); Serial.println(timeStr);
-      Serial.print("rawTime "); Serial.println(rawTime);
+      //Serial.print("timeStr "); Serial.println(timeStr);
+      //Serial.print("rawTime "); Serial.println(rawTime);
       //open the file we'll be writing to.
       File dataFile = SD.open(config.workingFilename, FILE_WRITE);
 
