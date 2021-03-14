@@ -1,8 +1,9 @@
+
 <!DOCTYPE HTML>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta http-equiv="refresh" content="60">
+        <meta http-equiv="refresh" content="60">
         <title>Super Graphing Data Logger!</title>
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -155,7 +156,15 @@ $(function () {
 <link rel="stylesheet" type="text/css" href="http://www.highcharts.com/highslide/highslide.css" />
 
 <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
-
+ <script>
+var timeleft = 60;
+var downloadTimer = setInterval(function(){
+  document.getElementById("progressBar").value = 60 - --timeleft;
+  if(timeleft <= 0)
+    clearInterval(downloadTimer);
+},1000);
+</script>
+<progress value="0" max="60" id="progressBar"style="height:12px;width:100%"> ></progress>
     </body>
 </html>
 
