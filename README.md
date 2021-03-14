@@ -1,6 +1,8 @@
 # super-graphing-data-logger
 An arduino sketch for my old super graphing data logger project.
 
+forked from https://github.com/evjrob/super-graphing-data-logger
+
 --------------------------
 
 luberth some changes
@@ -16,8 +18,7 @@ fixed some compile errors for main ino
 
 ---------------------
 
-For detailed instructions on how to set this project up, please see the associated wordpress post:
-http://everettsprojects.com/2012/12/31/arduino-super-graphing-data-logger/
+
 
 first chart maybe nice for https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
 
