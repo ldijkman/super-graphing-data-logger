@@ -210,7 +210,7 @@ unsigned long getTime() {
     // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
     const unsigned long seventyYears = 2208988800UL;
     // subtract seventy years:
-    unsigned long epoch = secsSince1900 - seventyYears;
+    unsigned long epoch = (secsSince1900 - seventyYears)+3600; //time offset 3600seconds for my location amsterdam europe
     // return Unix time:
     return epoch;
   }
