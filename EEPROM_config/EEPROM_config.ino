@@ -18,7 +18,7 @@
  */
 
 #include <EEPROM.h>
-#include <EEPROMAnything.h>
+#include "EEPROMAnything.h"
 
 typedef struct{
     unsigned long newFileTime;
@@ -33,7 +33,7 @@ void setup(){
   //Make sure your filename is not too long for the workingFilename char array 
   configuration config = {1356912000L,"/data/25-12-12.csv"};
   //Write the values to the EEPROM
-  //EEPROM_writeAnything(0, config);       //Uncomment when you're sure everything is correct
+  EEPROM_writeAnything(0, config);       //Uncomment when you're sure everything is correct
   configuration config2;                   //Create a second config struct for verification
   EEPROM_readAnything(0,config2);
   Serial.print("The value read from EEPROM for newFileTime is: ");
