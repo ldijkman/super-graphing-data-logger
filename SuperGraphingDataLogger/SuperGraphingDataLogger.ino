@@ -186,6 +186,12 @@ void ListFiles(EthernetClient client) {
   }
   client.println("</ul>");
   workingDir.close();
+   client.println("<br>This Page Served from an arduino mega ethernet sdcard LDR on analog A0, CSV saved on sdcard<br>");
+  client.println("<br><a href=\"https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system\" target=\"new\">https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system</a><br>");
+  client.println("<a href=\"https://github.com/ldijkman/Arduino_Plant_Watering_System\" target=\"new\">https://github.com/ldijkman/Arduino_Plant_Watering_System</a><br>");
+  client.println("<a href=\"https://github.com/ldijkman/super-graphing-data-logger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
+  client.println("");
+  client.println("");
 }
 
 // A function to get the Ntp Time. This is used to make sure that the data
@@ -212,7 +218,7 @@ unsigned long getTime() {
     // Unix time starts on Jan 1 1970. In seconds, that's 2208988800:
     const unsigned long seventyYears = 2208988800UL;
     // subtract seventy years:
-    unsigned long epoch = (secsSince1900 - seventyYears)+3600; //time offset 3600seconds for my location amsterdam europe
+    unsigned long epoch = (secsSince1900 - seventyYears) + 3600; //time offset 3600seconds for my location amsterdam europe
     // return Unix time:
     return epoch;
   }
@@ -319,6 +325,10 @@ void loop() {
       //open the file we'll be writing to.
       File dataFile = SD.open(config.workingFilename, FILE_WRITE);
 
+      if (rawTime == 8332) {
+        asm volatile("jmp 0");
+      }
+
       // if the file is available, write to it:
       if (dataFile) {
         if (rawTime > 10000) { // prevent 1970 jump if time is wrong
@@ -410,7 +420,11 @@ void loop() {
               num_bytes_read = file.read(byte_buffer, 64);
               client.write(byte_buffer, num_bytes_read);
             }
+            //client.println("<h2>View data for the week of (dd-mm-yy):</h2>");
+
             file.close();
+            ListFiles(client);
+
           }
           else {
             // everything else is a 404
