@@ -1,6 +1,6 @@
 ntp time removed
 
-RTC DS3231 tfor time now
+RTC DS3231 for time now
 
 for standalone use if there is no internet connection
 
