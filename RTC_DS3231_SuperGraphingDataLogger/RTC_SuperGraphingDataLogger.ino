@@ -9,31 +9,29 @@
  * ************************************************************************
    Everett Robinson, December 2016. More at: http://everettsprojects.com
 
-   This sketch relies on the SD and ethernet libraries in arduino 1.0 or newer.
-   The following extra non standard libraries were also used, and will need to
-   be added to the libraries folder:
-   - Time: http://playground.arduino.cc/Code/Time
+forked and changes made by luberth dijkman
+http://Arduino.tk
+https://github.com/ldijkman/super-graphing-data-logger
+low cost pee measurement system
+https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
 
 
 
-
-   You must also ensure that you have the HC.htm file in the root directory
-   of your SD card, as well as a data directory where the datafiles will be
-   stored.
+   SDcard 
+   HC.htm        file in the root directory
+   /data/       directory where the csv log files will be stored.
 
    This sketch combines the functionality of an existing fileserver example
    which can be found at http://www.ladyada.net/learn/arduino/ethfiles.html
    with the Datalogger example that comes with the new SD library from 1.0,
-   as well as some code from the UdpNtpClient example that cones with the
-   ethernet library.
+   
 
-   Added to all of these are some tricks to make it manage and serve up the
-   datafiles in conjunction with a page which uses highcharts JS to graph it.
-   This is basically accomplished using the arduino by itself. Because I
-   actually host the highcharts.js files externally, this is true more in
-   theory than in actual practice, but oh well. It should work just fine to
-   have the highcharts.js file on the arduino's SD card, though loading the
-   page will be painfully slow.
+   serve up the datafiles in conjunction with a page which uses highcharts JS to graph it.
+  
+   highcharts.js files externally
+   It should work just fine to have the highcharts.js file 
+   on the arduino's SD card, 
+   though loading the page will be painfully slow.
 
    Some of the code this was derived from may or may not be under a GPL
    licence; I'm not entirely sure. I suppose anyone using this should treat
