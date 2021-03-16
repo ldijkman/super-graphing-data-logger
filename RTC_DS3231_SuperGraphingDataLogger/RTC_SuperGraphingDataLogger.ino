@@ -1,6 +1,6 @@
 
 // NTP time  removed
-// now RTC DS3231 for time 
+// now RTC DS3231 for time
 
 
 /* ************************************************************************
@@ -184,7 +184,7 @@ void setup() {
   Serial.println(Ethernet.localIP());
 
   server.begin();
- 
+
   EEPROM_readAnything(0, config); // make sure our config struct is syncd with EEPROM
 }
 
@@ -205,18 +205,23 @@ void ListFiles(EthernetClient client) {
     }
     client.print("<li><a href=\"/HC.htm?file=");
     client.print(entry.name());
-    client.print("\">");
+    client.print("\">Graphic View ");
+    client.print(entry.name());
+    client.println(" ------ </a>");
+    client.print("<a href=\"/data/");
+    client.print(entry.name());
+    client.print("\">Text CSV File ");
     client.print(entry.name());
     client.println("</a></li>");
     entry.close();
   }
   client.println("</ul>");
   workingDir.close();
-   client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br>");
+  client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br>maybe will switch hardware to 8 Euro WT32-ETH01 ESP32 with RJ45 Wired Ethernet<br>");
   client.println("<br><a href=\"https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system\" target=\"new\">https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system</a><br>");
   client.println("<a href=\"https://github.com/ldijkman/Arduino_Plant_Watering_System\" target=\"new\">https://github.com/ldijkman/Arduino_Plant_Watering_System</a><br>");
   client.println("<a href=\"https://github.com/ldijkman/super-graphing-data-logger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
-  client.println("");
+  client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br> ");
   client.println("");
 }
 
@@ -246,11 +251,11 @@ void loop() {
   if (last_second != second_now) {       // only do this once each second
 
     last_second = second_now;
-    
-// print unixtime
-//    Serial.print("rtc = ");
-//    Serial.println(now.unixtime());
-  
+
+    // print unixtime
+    //    Serial.print("rtc = ");
+    //    Serial.println(now.unixtime());
+
     // Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
     // Serial.print(" ");
     // Serial.print(now.day(), DEC);
@@ -282,7 +287,7 @@ void loop() {
 
 
 
-  
+
   if ((millis() % lastIntervalTime) >= MEASURE_INTERVAL) { //Is it time for a new measurement?
 
     char dataString[20] = "";
@@ -290,78 +295,78 @@ void loop() {
     unsigned long rawTime;
     rawTime = now.unixtime();           // getTime();
 
- 
 
-      //Decide if it's time to make a new file or not. Files are broken
-      //up like this to keep loading times for each chart bearable.
-      //Lots of string stuff happens to make a new filename if necessary.
-      if (rawTime >= config.newFileTime) {
-        int dayInt = day(rawTime);
-        int monthInt = month(rawTime);
-        int yearInt = year(rawTime);
-        char newFilename[18] = "";
-        char dayStr[3];
-        char monthStr[3];
-        char yearStr[5];
-        char subYear[3];
-        strcat(newFilename, "data/");
-        itoa(dayInt, dayStr, 10);
-        if (dayInt < 10) {
-          strcat(newFilename, "0");
-        }
-        strcat(newFilename, dayStr);
-        strcat(newFilename, "-");
-        itoa(monthInt, monthStr, 10);
-        if (monthInt < 10) {
-          strcat(newFilename, "0");
-        }
-        strcat(newFilename, monthStr);
-        strcat(newFilename, "-");
-        itoa(yearInt, yearStr, 10);
-        //we only want the last two digits of the year
-        memcpy( subYear, &yearStr[2], 3 );
-        strcat(newFilename, subYear);
-        strcat(newFilename, ".csv");
 
-        //make sure we update our config variables:
-        config.newFileTime += FILE_INTERVAL;
-        strcpy(config.workingFilename, newFilename);
-        //Write the changes to EEPROM. Bad things may happen if power is lost midway through,
-        //but it's a small risk we take. Manual fix with EEPROM_config sketch can correct it.
-        EEPROM_writeAnything(0, config);
+    //Decide if it's time to make a new file or not. Files are broken
+    //up like this to keep loading times for each chart bearable.
+    //Lots of string stuff happens to make a new filename if necessary.
+    if (rawTime >= config.newFileTime) {
+      int dayInt = day(rawTime);
+      int monthInt = month(rawTime);
+      int yearInt = year(rawTime);
+      char newFilename[18] = "";
+      char dayStr[3];
+      char monthStr[3];
+      char yearStr[5];
+      char subYear[3];
+      strcat(newFilename, "data/");
+      itoa(dayInt, dayStr, 10);
+      if (dayInt < 10) {
+        strcat(newFilename, "0");
       }
-
-      //get the values and setup the string we want to write to the file
-      int sensor = analogRead(analogPin);
-      char timeStr[12];
-      char sensorStr[6];
-
-      ultoa(rawTime, timeStr, 10);
-      itoa(sensor, sensorStr, 10);
-
-      strcat(dataString, timeStr);
-      strcat(dataString, ",");
-      strcat(dataString, sensorStr);
-      //Serial.print("timeStr "); Serial.println(timeStr);
-      //Serial.print("rawTime "); Serial.println(rawTime);
-      //open the file we'll be writing to.
-      File dataFile = SD.open(config.workingFilename, FILE_WRITE);
-
-
-
-      // if the file is available, write to it:
-      if (dataFile) {
-        
-          dataFile.println(dataString);
-        
-        dataFile.close();
-        // print to the serial port too:
-        Serial.println(dataString);
+      strcat(newFilename, dayStr);
+      strcat(newFilename, "-");
+      itoa(monthInt, monthStr, 10);
+      if (monthInt < 10) {
+        strcat(newFilename, "0");
       }
-      // if the file isn't open, pop up an error:
-      else {
-        Serial.println("Error opening datafile for writing");
-      }
+      strcat(newFilename, monthStr);
+      strcat(newFilename, "-");
+      itoa(yearInt, yearStr, 10);
+      //we only want the last two digits of the year
+      memcpy( subYear, &yearStr[2], 3 );
+      strcat(newFilename, subYear);
+      strcat(newFilename, ".csv");
+
+      //make sure we update our config variables:
+      config.newFileTime += FILE_INTERVAL;
+      strcpy(config.workingFilename, newFilename);
+      //Write the changes to EEPROM. Bad things may happen if power is lost midway through,
+      //but it's a small risk we take. Manual fix with EEPROM_config sketch can correct it.
+      EEPROM_writeAnything(0, config);
+    }
+
+    //get the values and setup the string we want to write to the file
+    int sensor = analogRead(analogPin);
+    char timeStr[12];
+    char sensorStr[6];
+
+    ultoa(rawTime, timeStr, 10);
+    itoa(sensor, sensorStr, 10);
+
+    strcat(dataString, timeStr);
+    strcat(dataString, ",");
+    strcat(dataString, sensorStr);
+    //Serial.print("timeStr "); Serial.println(timeStr);
+    //Serial.print("rawTime "); Serial.println(rawTime);
+    //open the file we'll be writing to.
+    File dataFile = SD.open(config.workingFilename, FILE_WRITE);
+
+
+
+    // if the file is available, write to it:
+    if (dataFile) {
+
+      dataFile.println(dataString);
+
+      dataFile.close();
+      // print to the serial port too:
+      Serial.println(dataString);
+    }
+    // if the file isn't open, pop up an error:
+    else {
+      Serial.println("Error opening datafile for writing");
+    }
 
     //Update the time of the last measurment to the current timer value
     lastIntervalTime = millis();
