@@ -246,15 +246,11 @@ void loop() {
   if (last_second != second_now) {       // only do this once each second
 
     last_second = second_now;
-
-   Serial.print("rtc = ");
-    Serial.println(now.unixtime());
-   
-
-
-    // Serial.print("millis() "); Serial.println(millis());
-    // Serial.println("");
-
+    
+// print unixtime
+//    Serial.print("rtc = ");
+//    Serial.println(now.unixtime());
+  
     // Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
     // Serial.print(" ");
     // Serial.print(now.day(), DEC);
@@ -262,27 +258,7 @@ void loop() {
     // Serial.print(now.month(), DEC);
     // Serial.print("-");
     // Serial.print(now.year(), DEC);
-
-
-    //lcd.setCursor(0, 0);
-    //lcd.print(now.hour());
-    //lcd.print(':');
-    //if (now.minute() <= 9)lcd.print('0');
-    //lcd.print(now.minute());
-    //lcd.print(':');
-    //if (now.second() <= 9)lcd.print('0');
-    //lcd.print(now.second());
-    //lcd.print(" ");
-    //lcd.print(now.day());
-    //lcd.print("-");
-    //lcd.print(now.month());
-    //lcd.print("-");
-    //lcd.print(now.year());
-    //lcd.print(" ");
-
-
     // Serial.println(' ');
-
     // Serial.print(now.hour(), DEC);
     // Serial.print(':');
     // Serial.print(now.minute(), DEC);
