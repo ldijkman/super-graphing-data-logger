@@ -273,7 +273,7 @@ void loop() {
 
       if (myFile) {                                                 // looks like println allready seeks end of file, where to append
         // myFile.println(dataString);                                 // print string to sdcard log file
-        // myFile.close();
+         myFile.close();
         // Serial.println(dataString);                                 // print to the serial port too:
         // lcd.setCursor(9, 0);
         // lcd.print("SDok");
