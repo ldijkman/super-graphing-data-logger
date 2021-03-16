@@ -13,7 +13,7 @@
    The following extra non standard libraries were also used, and will need to
    be added to the libraries folder:
    - Time: http://playground.arduino.cc/Code/Time
-   
+
 
 
 
@@ -64,16 +64,17 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 /************ ETHERNET STUFF ************/
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x4C, 0x64 };
 byte ip[] = { 192, 168, 178, 10 };
+
 EthernetServer server(80);
 
 
 
 /*** DATA LOGGER AND TIMER CONTROLS ****/
 const int analogPin = 0;
+
 unsigned long lastIntervalTime = 0; //The time the last measurement occured.
-#define MEASURE_INTERVAL 10000     //10 minute intervals between measurements (in ms)
-unsigned long newFileTime;          //The time at which we should create a new week's file
-#define FILE_INTERVAL 86400        //One day worth of seconds
+#define MEASURE_INTERVAL 10000     //10 seonds intervals between measurements (in ms)
+
 
 // How big our line buffer should be for sending the files over the ethernet.
 // 75 has worked fine for me so far.
@@ -81,65 +82,29 @@ unsigned long newFileTime;          //The time at which we should create a new w
 
 
 
-//A structure that stores file config variables from EEPROM
-typedef struct {
-  unsigned long newFileTime;      //Keeps track of when a newfile should be made.
-  char workingFilename[19];       //The path and filename of the current week's file
-} configuration;
-
-configuration config;               //Actually make our config struct
 
 
-// Strings stored in flash mem for the Html Header (saves ram)
-const char HeaderOK_0[] PROGMEM = "HTTP/1.1 200 OK";            //
-const char HeaderOK_1[] PROGMEM = "Content-Type: text/html";    //
-const char HeaderOK_2[] PROGMEM = "";                           //
 
-// A table of pointers to the flash memory strings for the header
-const char* const HeaderOK_table[] PROGMEM = {
-  HeaderOK_0,
-  HeaderOK_1,
-  HeaderOK_2
-};
-
-// A function for reasy printing of the headers
+// A function for easy printing of the headers
 void HtmlHeaderOK(EthernetClient client) {
 
-  char buffer[30]; //A character array to hold the strings from the flash mem
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println("");
 
-  for (int i = 0; i < 3; i++) {
-    strcpy_P(buffer, (char*)pgm_read_word(&(HeaderOK_table[i])));
-    client.println( buffer );
-  }
 }
 
 
-// Strings stored in flash mem for the Html 404 Header
-const char Header404_0[] PROGMEM = "HTTP/1.1 404 Not Found";     //
-const char Header404_1[] PROGMEM = "Content-Type: text/html";    //
-const char Header404_2[] PROGMEM = "";                           //
-const char Header404_3[] PROGMEM = "<h2>File Not Found!</h2>";
-
-//const char HeaderOK_0[] PROGMEM = "HTTP/1.1 200 OK";
 
 
-// A table of pointers to the flash memory strings for the header
-const char* const Header404_table[] PROGMEM = {
-  Header404_0,
-  Header404_1,
-  Header404_2,
-  Header404_3
-};
-
-// Easy peasy 404 header function
+// error 404 header function
 void HtmlHeader404(EthernetClient client) {
 
-  char buffer[30]; //A character array to hold the strings from the flash mem
+  client.println("HTTP/1.1 404 Not Found");
+  client.println("Content-Type: text/html");
+  client.println("");
+  client.println("<h2>File Not Found!</h2>");
 
-  for (int i = 0; i < 4; i++) {
-    strcpy_P(buffer, (char*)pgm_read_word(&(Header404_table[i])));
-    client.println( buffer );
-  }
 }
 
 
@@ -176,18 +141,19 @@ void setup() {
   Serial.println("card initialized.");
 
   // The SD card is working, start the server and ethernet related stuff!
-  if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
-    // don't do anything more:
-    return;
-  }
+
+  Ethernet.begin(mac, ip);
+  // Serial.println("Failed to configure Ethernet using DHCP");
+  // don't do anything more:
+  //return;
+
   Serial.println("DHCP configured!");
   Serial.print("IP-address: ");
   Serial.println(Ethernet.localIP());
 
   server.begin();
 
- 
+
 }
 
 // A function that takes care of the listing of files for the
@@ -222,8 +188,9 @@ void ListFiles(EthernetClient client) {
   client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br>maybe will switch hardware to 8 Euro WT32-ETH01 ESP32 with RJ45 Wired Ethernet<br>");
   client.println("<br><a href=\"https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system\" target=\"new\">https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system</a><br>");
   client.println("<a href=\"https://github.com/ldijkman/Arduino_Plant_Watering_System\" target=\"new\">https://github.com/ldijkman/Arduino_Plant_Watering_System</a><br>");
-  client.println("<a href=\"https://github.com/ldijkman/super-graphing-data-logger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
-  client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br> ");
+  client.println("<br><a href=\"https://github.com/ldijkman/super-graphing-data-logger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
+  client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br>");
+  client.println("removed the eepromanything == just a new log file each day<br> ");
   client.println("");
 }
 
@@ -294,45 +261,44 @@ void loop() {
     rawTime = now.unixtime();           // getTime();
 
 
- File myFile;
-  byte errorflag = 0;
+    File myFile;
+    byte errorflag = 0;
 
-  // filename must be 8.3 size CSV file 5 december 2021 makes 5_12_21.CSV
-  String DateStampFile = "data/" + String(now.day()) + "-" + String(now.month()) + "-" + String(now.year() - 2000) + ".CSV";
-  //String LogFileHeader = "time, dry1, wett1, dry2, wett2, sensor1, sensor2, averageinprocent, moisturestartprocent, starthour, endhour, temperature, jobcounter, maxjobs, wateringduration, pauzeduration, lastwateringtime, ValveStatus, watergifttimer, pauzetimer, outputread, errorflag,";
-  // must be a units header here?, but cannot find info about that
+    // filename must be 8.3 size CSV file 5 december 2021 makes 5-12-21.CSV
+    String DateStampFile = "data/" + String(now.day()) + "-" + String(now.month()) + "-" + String(now.year() - 2000) + ".CSV";
+    // String LogFileHeader = "time, dry1, wett1, dry2, wett2, sensor1, sensor2, averageinprocent, moisturestartprocent, starthour, endhour, temperature, jobcounter, maxjobs, wateringduration, pauzeduration, lastwateringtime, ValveStatus, watergifttimer, pauzetimer, outputread, errorflag,";
 
-  if (SD.exists(DateStampFile)) {                                 // does the file exist on sdcard?
-   // Serial.print("File exists. "); Serial.println(DateStampFile);
+    if (SD.exists(DateStampFile)) {                                 // does the file exist on sdcard?
+      // Serial.print("File exists. "); Serial.println(DateStampFile);
 
-    myFile = SD.open(DateStampFile, FILE_WRITE);                  // if yes open it
+      myFile = SD.open(DateStampFile, FILE_WRITE);                  // if yes open it
 
-    if (myFile) {                                                 // looks like println allready seeks end of file, where to append
-      //myFile.println(dataString);                                 // print string to sdcard log file
-      // myFile.close();
-      // Serial.println(dataString);                                 // print to the serial port too:
-      //lcd.setCursor(9, 0);
-      // lcd.print("SDok");
-      // errorflag = 0;
-    } else {
-      Serial.print("# error opening ");  Serial.println(myFile);    // if the file isn't open, pop up an error:
-      //lcd.setCursor(9, 0);
-      //lcd.print("SD=X");
-      //  errorflag = 1;
+      if (myFile) {                                                 // looks like println allready seeks end of file, where to append
+        // myFile.println(dataString);                                 // print string to sdcard log file
+        // myFile.close();
+        // Serial.println(dataString);                                 // print to the serial port too:
+        // lcd.setCursor(9, 0);
+        // lcd.print("SDok");
+        // errorflag = 0;
+      } else {
+        Serial.print("# error opening ");  Serial.println(myFile);    // if the file isn't open, pop up an error:
+        // lcd.setCursor(9, 0);
+        // lcd.print("SD=X");
+        // errorflag = 1;
+      }
+
     }
-
-  }
-  else
-  {
-    Serial.print(DateStampFile); Serial.println("# Does not exist.");
-    Serial.print(DateStampFile); Serial.println("# Creating File.");
-    myFile = SD.open(DateStampFile, FILE_WRITE);                  // create file with datestamp.txt MUST BE 8.3 SIZE
-    //myFile.println(LogFileHeader);                                // print header to file for spreadsheet or chartmaker
-    myFile.close();
-    //lcd.setCursor(9, 0);
-    //lcd.print("SD=X");
-    // /errorflag = 1;
-  }
+    else
+    {
+      Serial.print(DateStampFile); Serial.println("# Does not exist.");
+      Serial.print(DateStampFile); Serial.println("# Creating File.");
+      myFile = SD.open(DateStampFile, FILE_WRITE);                  // create file with datestamp.txt MUST BE 8.3 SIZE
+      //myFile.println(LogFileHeader);                                // print header to file for spreadsheet or chartmaker
+      myFile.close();
+      // lcd.setCursor(9, 0);
+      // lcd.print("SD=X");
+      // errorflag = 1;
+    }
 
 
 
@@ -381,7 +347,7 @@ void loop() {
 
 
 
- 
+
 
 
 
