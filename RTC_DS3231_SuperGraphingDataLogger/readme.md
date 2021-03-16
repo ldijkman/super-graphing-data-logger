@@ -1,3 +1,5 @@
+# arduino mega maybe online http://arduino.tk:8888/
+
 ntp time removed
 
 i2c RTC DS3231 for time now
