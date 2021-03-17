@@ -41,6 +41,8 @@
 
 */
 
+
+// webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage 
 const char Web_page[] PROGMEM = R"=====(
 <!DOCTYPE HTML>
 <html>
@@ -222,7 +224,7 @@ var downloadTimer = setInterval(function(){
 
 )=====";
 
-
+// end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage 
 
 
 
@@ -384,7 +386,7 @@ void ListFiles(EthernetClient client) {
   client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br>maybe will switch hardware to 8 Euro WT32-ETH01 ESP32 with RJ45 Wired Ethernet<br>");
   client.println("<br><a href=\"https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system\" target=\"new\">https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system</a><br>");
   client.println("<a href=\"https://github.com/ldijkman/Arduino_Plant_Watering_System\" target=\"new\">https://github.com/ldijkman/Arduino_Plant_Watering_System</a><br>");
-  client.println("<br><a href=\"https://github.com/ldijkman/super-graphing-data-logger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
+  client.println("<br><a href=\"https://github.com/ldijkman/super-graphing-data-logger/tree/master/RTC_DS3231_SuperGraphingDataLogger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
   client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br>");
   client.println("removed the eepromanything == just a new log file each day<br> ");
   client.println("");
