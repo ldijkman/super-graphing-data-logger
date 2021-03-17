@@ -44,7 +44,7 @@
 
 */
 
-
+// webpage is overwritten to sdcard on sdcard on startup in setup
 // webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage 
 const char Web_page[] PROGMEM = R"=====(
 <!DOCTYPE HTML>
@@ -52,7 +52,7 @@ const char Web_page[] PROGMEM = R"=====(
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="refresh" content="60">
-        <title>Super Graphing Data Logger! you are inside aduino mega 2560 with ethernet shield with SD-Card</title>
+        <title>Super Graphing Data Logger! you are now inside my arduino mega 2560 with ethernet shield and SD-Card</title>
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
