@@ -2,6 +2,16 @@
 
 my version == single file 
 
+added watchdog 8 seconds
+
+#include <avr/wdt.h>                  // for watchdogtimer
+
+wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8seconds reboot (reset in begin main loop)
+
+wdt_reset();   // feed the Dog, kick the Dog  reset watchdog timer if not done reboots
+
+//while(1==1){Serial.println("watchdog test 8 seconds"); delay(500);}
+
 ntp time removed
 
 i2c RTC DS3231 for time now
