@@ -1,4 +1,7 @@
 
+
+// my arduino mega maybe online at http://arduino.tk:8888/
+
 // NTP time  removed
 // now RTC DS3231 for time
 // removed the eepromanything new log file each day
@@ -35,7 +38,7 @@
 
    Some of the code this was derived from may or may not be under a GPL
    licence; I'm not entirely sure. I suppose anyone using this should treat
-   it like it is too, but I don't really care too much.
+   it like it is too
    Also if one intends to use this for commercial applications, it may be
    necessary to purchase a license for Highcharts.
 
@@ -349,7 +352,7 @@ myFile = SD.open("/HC.htm", FILE_WRITE);                  // if yes open it
         myFile.print( PMTXT(Web_page) );                                 // print string to sdcard log file
         myFile.close();
       }
-Serial.print( PMTXT(Web_page) );
+//Serial.print( PMTXT(Web_page) );
 
 
 }
