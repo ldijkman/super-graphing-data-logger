@@ -10,6 +10,8 @@ forked from https://github.com/evjrob/super-graphing-data-logger
 
 luberth some changes
 
+on start writes webpage from progmem to sd card /HC.htm (for RTC DS3231 version)
+
 \<meta http-equiv="refresh" content="60"\> reload htm page every 60 seconds
 
 progres bar on bottom of html page to show when page reloads
