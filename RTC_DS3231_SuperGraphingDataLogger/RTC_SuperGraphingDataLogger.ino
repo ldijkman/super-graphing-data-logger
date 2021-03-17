@@ -9,28 +9,28 @@
  * ************************************************************************
    Everett Robinson, December 2016. More at: http://everettsprojects.com
 
-forked and changes made by luberth dijkman
-http://Arduino.tk
-https://github.com/ldijkman/super-graphing-data-logger
-low cost pee measurement system
-https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
+  forked and changes made by luberth dijkman
+  http://Arduino.tk
+  https://github.com/ldijkman/super-graphing-data-logger
+  low cost pee measurement system
+  https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
 
 
 
-   SDcard 
+   SDcard
    HC.htm        file in the root directory
    /data/       directory where the csv log files will be stored.
 
    This sketch combines the functionality of an existing fileserver example
    which can be found at http://www.ladyada.net/learn/arduino/ethfiles.html
    with the Datalogger example that comes with the new SD library from 1.0,
-   
+
 
    serve up the datafiles in conjunction with a page which uses highcharts JS to graph it.
-  
+
    highcharts.js files externally
-   It should work just fine to have the highcharts.js file 
-   on the arduino's SD card, 
+   It should work just fine to have the highcharts.js file
+   on the arduino's SD card,
    though loading the page will be painfully slow.
 
    Some of the code this was derived from may or may not be under a GPL
@@ -40,6 +40,191 @@ https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system
    necessary to purchase a license for Highcharts.
 
 */
+
+const char Web_page[] PROGMEM = R"=====(
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="refresh" content="60">
+        <title>Super Graphing Data Logger! you are inside aduino mega 2560 with ethernet shield with SD-Card</title>
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+        <script type="text/javascript">
+function getDataFilename(str){
+    point = str.lastIndexOf("file=")+4;
+
+    tempString = str.substring(point+1,str.length)
+    if (tempString.indexOf("&") == -1){
+    return(tempString);
+    }
+    else{
+        return tempString.substring(0,tempString.indexOf("&"));
+    }
+        
+}
+
+query  = window.location.search;
+
+var dataFilePath = "/data/"+getDataFilename(query);
+
+$(function () {
+    var chart;
+    $(document).ready(function() {
+    
+        // define the options
+        var options = {
+    
+            chart: {
+                renderTo: 'container',
+                zoomType: 'x',
+                spacingRight: 20
+            },
+    
+            title: {
+                text: 'Light levels recorded by Arduino mega2560 with ethernet shield LDR lightsensor on analog A0'
+            },
+    
+            subtitle: {
+                text: 'Click and drag in the plot area to zoom in'
+            },
+    
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 1 * 3600000
+            },
+    
+            yAxis: {
+                title: {
+                    text: 'Light Levels (0 - 1024)'
+                },
+                min: 0,
+                startOnTick: false,
+                showFirstLabel: false
+            },
+    
+            legend: {
+                enabled: false
+            },
+    
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%H:%M:%S - %b %e, %Y', this.x) +': '+ this.y;
+                }
+            },
+    
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    lineWidth: 1.0,
+                    point: {
+                        events: {
+                            click: function() {
+                                hs.htmlExpand(null, {
+                                    pageOrigin: {
+                                        x: this.pageX,
+                                        y: this.pageY
+                                    },
+                                    headingText: this.series.name,
+                                    maincontentText: Highcharts.dateFormat('%H:%M - %b %e, %Y', this.x) +':<br/> '+
+                                        this.y,
+                                    width: 200
+                                });
+                            }
+                        }
+                    },
+                }
+            },
+    
+            series: [{
+                name: 'Light Levels',
+                marker: {
+                    radius: 2
+                }
+            }]
+        };
+    
+    
+        // Load data asynchronously using jQuery. On success, add the data
+        // to the options and initiate the chart.
+        // This data is obtained by exporting a GA custom report to TSV.
+        // http://api.jquery.com/jQuery.get/
+        jQuery.get(dataFilePath, null, function(csv, state, xhr) {
+            var lines = [],
+                date,
+    
+                // set up the two data series
+                lightLevels = [];
+    
+            // inconsistency
+            if (typeof csv !== 'string') {
+                csv = xhr.responseText;
+            }
+    
+            // split the data return into lines and parse them
+            csv = csv.split(/\n/g);
+            jQuery.each(csv, function(i, line) {
+    
+                // all data lines start with a double quote
+                line = line.split(',');
+                date = parseInt(line[0], 10)*1000;
+    
+                lightLevels.push([
+                    date,
+                    parseInt(line[1], 10)
+                ]);
+                
+            });
+    
+            options.series[0].data = lightLevels;
+    
+            chart = new Highcharts.Chart(options);
+        });
+    });
+    
+});
+        </script>
+    </head>
+    <body>
+<center>Yesterday <label id="yesterday"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Today <label id="today"></label></center>
+<script>
+var today = new Date();
+var yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+document.getElementById("yesterday").innerHTML = "<a href=\"HC.htm?file="+yesterday.getDate()+ "-"+(yesterday.getMonth()+1)+ "-"+(yesterday.getFullYear().toString().substr(2, 2))+ ".CSV\">"+yesterday.getDate()+ "-"+(yesterday.getMonth()+1)+ "-"+(yesterday.getFullYear().toString().substr(2, 2))+ ".CSV<a>";
+
+document.getElementById("today").innerHTML ="<a href=\"HC.htm?file="+today.getDate()+ "-"+(today.getMonth()+1)+ "-"+(today.getFullYear().toString().substr(2, 2))+ ".CSV\">"+today.getDate()+ "-"+(today.getMonth()+1)+ "-"+(today.getFullYear().toString().substr(2, 2))+ ".CSV<a>";
+</script>
+        <!--<p style="text-align:center;">Please allow the chart to load, it may take up to 30 seconds </p>-->
+        <hr/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/highcharts.js"></script>
+
+<!-- Additional files for the Highslide popup effect -->
+<script type="text/javascript" src="http://www.highcharts.com/highslide/highslide-full.min.js"></script>
+<script type="text/javascript" src="http://www.highcharts.com/highslide/highslide.config.js" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="http://www.highcharts.com/highslide/highslide.css" />
+
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"><center><img src="https://media1.tenor.com/images/72b72ff0c392a16c6b12e80bbe3473c5/tenor.gif?itemid=4989541"><center></div>
+ <script>
+var timeleft = 60;
+var downloadTimer = setInterval(function(){
+  document.getElementById("progressBar").value = 60 - --timeleft;
+  if(timeleft <= 0)
+    clearInterval(downloadTimer);
+},1000);
+</script>
+<progress value="0" max="60" id="progressBar"style="height:12px;width:100%"> ></progress>
+    </body>
+</html>
+
+
+)=====";
+
+
+
+
 
 #include <SD.h>
 #include <Ethernet.h>
@@ -152,6 +337,19 @@ void setup() {
   server.begin();
 
 
+
+#define PMTXT(textarray) (reinterpret_cast<const __FlashStringHelper*>(textarray))
+ SD.remove("/HC.htm"); //delete html page we create a new one from progmem to sdcard
+ File myFile;
+myFile = SD.open("/HC.htm", FILE_WRITE);                  // if yes open it
+      
+      if (myFile) {                                                 // looks like println allready seeks end of file, where to append
+        myFile.print( PMTXT(Web_page) );                                 // print string to sdcard log file
+        myFile.close();
+      }
+Serial.print( PMTXT(Web_page) );
+
+
 }
 
 // A function that takes care of the listing of files for the
@@ -171,12 +369,12 @@ void ListFiles(EthernetClient client) {
     }
     client.print("<li><a href=\"/HC.htm?file=");
     client.print(entry.name());
-    client.print("\">Graphic View ");
+    client.print("\">Graphic ");
     client.print(entry.name());
-    client.println(" ------ </a>");
+    client.println("&nbsp;&nbsp;</a>");
     client.print("<a href=\"/data/");
     client.print(entry.name());
-    client.print("\">Text CSV File ");
+    client.print("\">Text ");
     client.print(entry.name());
     client.println("</a></li>");
     entry.close();
