@@ -14,4 +14,4 @@ on start writes creates webpage from progmem to sd card /HC.htm (for RTC DS3231 
 
 Easier for me to make changes to html page
 
-and if someone inserts a card with no htm file it gets created
+and if someone inserts a card with no HC.htm file it gets created
