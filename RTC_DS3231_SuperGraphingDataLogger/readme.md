@@ -8,4 +8,4 @@ for standalone use if there is no internet connection
 
  removed the eeprom part eeprom anything == just create daily a new csv file
 
-would like to have the webpage HC.htm in progmem TAB and not on sdcard
+on start writes webpage from progmem to sd card /HC.htm (for RTC DS3231 version)
