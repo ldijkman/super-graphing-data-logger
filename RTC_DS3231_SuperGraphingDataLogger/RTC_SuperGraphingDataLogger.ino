@@ -194,10 +194,13 @@ $(function () {
         </script>
     </head>
     <body>
-<center>Yesterday <label id="yesterday"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Today <label id="today"></label></center>
+<center>ereyesterday<label id="ereyesterday"></label> Yesterday <label id="yesterday"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Today <label id="today"></label></center>
 <script>
 var today = new Date();
 var yesterday = new Date((new Date()).valueOf() - 1000*60*60*24);
+var ereyesterday = new Date((new Date()).valueOf() - 1000*60*60*24*2);
+document.getElementById("ereyesterday").innerHTML = "<a href=\"HC.htm?file="+ereyesterday.getDate()+ "-"+(ereyesterday.getMonth()+1)+ "-"+(ereyesterday.getFullYear().toString().substr(2, 2))+ ".CSV\">"+ereyesterday.getDate()+ "-"+(ereyesterday.getMonth()+1)+ "-"+(ereyesterday.getFullYear().toString().substr(2, 2))+ ".CSV<a>";
+
 document.getElementById("yesterday").innerHTML = "<a href=\"HC.htm?file="+yesterday.getDate()+ "-"+(yesterday.getMonth()+1)+ "-"+(yesterday.getFullYear().toString().substr(2, 2))+ ".CSV\">"+yesterday.getDate()+ "-"+(yesterday.getMonth()+1)+ "-"+(yesterday.getFullYear().toString().substr(2, 2))+ ".CSV<a>";
 
 document.getElementById("today").innerHTML ="<a href=\"HC.htm?file="+today.getDate()+ "-"+(today.getMonth()+1)+ "-"+(today.getFullYear().toString().substr(2, 2))+ ".CSV\">"+today.getDate()+ "-"+(today.getMonth()+1)+ "-"+(today.getFullYear().toString().substr(2, 2))+ ".CSV<a>";
@@ -238,6 +241,7 @@ var downloadTimer = setInterval(function(){
 #include <string.h>
 #include <Time.h>
 #include <avr/pgmspace.h>
+#include <avr/wdt.h>                  // for watchdogtimer
 
 #include "RTClib.h"                   // https://github.com/adafruit/RTClib
 
@@ -301,6 +305,9 @@ void HtmlHeader404(EthernetClient client) {
 
 //**************************************************************************************
 void setup() {
+
+wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8seconds reboot (reset in begin main loop)
+  
   Serial.begin(115200);
 
   pinMode(10, OUTPUT);          // set the SS pin as an output (necessary!)
@@ -386,7 +393,7 @@ void ListFiles(EthernetClient client) {
   }
   client.println("</ul>");
   workingDir.close();
-  client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br>maybe will switch hardware to 8 Euro WT32-ETH01 ESP32 with RJ45 Wired Ethernet<br>");
+  client.println("<br>This Page Served from an arduino mega ethernet sdcard, lightsensor LDR on analog A0, CSV log files saved on sdcard<br><br>maybe will switch hardware to 8 Euro WT32-ETH01 ESP32 with RJ45 Wired Ethernet<br>http://www.wireless-tag.com/portfolio/wt32-eth01/<br>");
   client.println("<br><a href=\"https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system\" target=\"new\">https://github.com/ldijkman/Arduino-Drain-Rain-Irrigation-Measure-weight-system</a><br>");
   client.println("<a href=\"https://github.com/ldijkman/Arduino_Plant_Watering_System\" target=\"new\">https://github.com/ldijkman/Arduino_Plant_Watering_System</a><br>");
   client.println("<br><a href=\"https://github.com/ldijkman/super-graphing-data-logger/tree/master/RTC_DS3231_SuperGraphingDataLogger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
@@ -410,6 +417,9 @@ void ListFiles(EthernetClient client) {
 
 //***********************************************************************************
 void loop() {
+
+  wdt_reset();   // feed the Dog, kick the Dog  reset watchdog timer if not done reboots
+  //while(1==1){Serial.println("watchdog test 8 seconds"); delay(500);}
 
   DateTime now = rtc.now();
 
