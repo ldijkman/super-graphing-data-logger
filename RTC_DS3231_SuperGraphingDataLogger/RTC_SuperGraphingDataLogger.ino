@@ -560,24 +560,7 @@ void loop() {
 
     //get the values and setup the string we want to write to the file
     int sensor = analogRead(analogPin);
- /*
-    char timeStr[12];
-    char sensorStr[6];
-
-
-    ultoa(rawTime, timeStr, 10);
-    itoa(sensor, sensorStr, 10);
-
-    strcat(dataString, timeStr);
-    strcat(dataString, ",");
-    strcat(dataString, sensorStr);
-    strcat(dataString, ",");
-    strcat(dataString, char(bme.readTemperature()));
-    strcat(dataString, ",");
-    strcat(dataString, char(bme.readHumidity()));
-    strcat(dataString, ",");
-    strcat(dataString, bme.readPressure() / 100.0F));
-   */ 
+ 
     String dataString = "";
     dataString += String(rawTime);
     dataString += ",";
@@ -588,10 +571,6 @@ void loop() {
     dataString += String(bme.readHumidity());
     dataString += ",";
     dataString += String((bme.readPressure() / 100.0F)); 
- 
-
-
-
        
     //Serial.print("timeStr "); Serial.println(timeStr);
     //Serial.print("rawTime "); Serial.println(rawTime);
