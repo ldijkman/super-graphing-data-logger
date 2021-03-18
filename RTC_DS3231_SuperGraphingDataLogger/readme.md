@@ -2,6 +2,8 @@
 
 my version == single file 
 
+added i2c BME280 sensor for temperature humidity millibar only vissible in csv log text data for now
+
 added watchdog 8 seconds
 
 #include <avr/wdt.h>                  // for watchdogtimer
