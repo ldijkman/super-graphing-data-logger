@@ -2,8 +2,9 @@
 
 // my arduino mega maybe online at http://arduino.tk:8888/
 
+// added i2c BME280 sensor for temp humid pressure
 // NTP time  removed
-// now RTC DS3231 for time
+// now i2c RTC DS3231 for time
 // removed the eepromanything new log file each day
 
 
@@ -45,7 +46,7 @@
 */
 
 // webpage is overwritten to sdcard on sdcard on startup in setup
-// webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage 
+// webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage
 const char Web_page[] PROGMEM = R"=====(
 <!DOCTYPE HTML>
 <html>
@@ -214,7 +215,7 @@ document.getElementById("today").innerHTML ="<a href=\"HC.htm?file="+today.getDa
 <script type="text/javascript" src="http://www.highcharts.com/highslide/highslide.config.js" charset="utf-8"></script>
 <link rel="stylesheet" type="text/css" href="http://www.highcharts.com/highslide/highslide.css" />
 
-<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"><center><img src="https://media1.tenor.com/images/72b72ff0c392a16c6b12e80bbe3473c5/tenor.gif?itemid=4989541"><center></div>
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"><center><img src="https://media1.tenor.com/images/72b72ff0c392a16c6b12e80bbe3473c5/tenor.gif?itemid=4989541" width="25%" height="25%"><center></div>
  <script>
 var timeleft = 60;
 var downloadTimer = setInterval(function(){
@@ -242,6 +243,7 @@ var downloadTimer = setInterval(function(){
 #include <Time.h>
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>                  // for watchdogtimer
+#include <Wire.h>
 
 #include "RTClib.h"                   // https://github.com/adafruit/RTClib
 
@@ -251,6 +253,10 @@ byte second_now;
 byte last_second;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+#define SEALEVELPRESSURE_HPA (1013.25)
+Adafruit_BME280 bme; // I2C
 
 
 /************ ETHERNET STUFF ************/
@@ -306,8 +312,6 @@ void HtmlHeader404(EthernetClient client) {
 //**************************************************************************************
 void setup() {
 
-wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8seconds reboot (reset in begin main loop)
-  
   Serial.begin(115200);
 
   pinMode(10, OUTPUT);          // set the SS pin as an output (necessary!)
@@ -315,7 +319,7 @@ wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8second
 
 
   if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
+    Serial.println("Could not find i2c RTC DS3231");
   }
 
   if (rtc.lostPower()) {
@@ -329,11 +333,11 @@ wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8second
 
   // see if the card is present and can be initialized:
   if (!SD.begin(4)) {
-    Serial.println("Card failed, or not present");
+    Serial.println("SD Card failed, or not present");
     // don't do anything more:
     return;
   }
-  Serial.println("card initialized.");
+  Serial.println("SD card initialized.");
 
   // The SD card is working, start the server and ethernet related stuff!
 
@@ -347,7 +351,18 @@ wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8second
   Serial.println(Ethernet.localIP());
 
   server.begin();
-
+    
+    
+    unsigned status;
+    
+    // default settings
+    status = bme.begin();  
+    // You can also pass in a Wire library object like &Wire2
+     status = bme.begin(0x76);
+    if (!status) {
+        Serial.println("Could not find a valid BME280 sensor, check wiring, address, sensor ID!");
+        Serial.print("SensorID was: 0x"); Serial.println(bme.sensorID(),16);
+    }
 
 
 #define PMTXT(textarray) (reinterpret_cast<const __FlashStringHelper*>(textarray))
@@ -361,6 +376,10 @@ myFile = SD.open("/HC.htm", FILE_WRITE);                  // if yes open it
       }
 //Serial.print( PMTXT(Web_page) );
 
+
+
+wdt_enable(WDTO_8S);             // enable watchdogtimer if not reset in 8seconds reboot (reset in begin main loop)
+  
 
 }
 
@@ -399,6 +418,7 @@ void ListFiles(EthernetClient client) {
   client.println("<br><a href=\"https://github.com/ldijkman/super-graphing-data-logger/tree/master/RTC_DS3231_SuperGraphingDataLogger\" target=\"new\">https://github.com/ldijkman/super-graphing-data-logger</a><br>");
   client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br>");
   client.println("removed the eepromanything == just a new log file each day<br> ");
+  client.println("added BME280 sensor for temperature humidity millibar only vissible in csv log text data for now<br> ");
   client.println("");
 }
 
@@ -450,8 +470,24 @@ void loop() {
     // Serial.print("Temperature: ");
     // Serial.print(rtc.getTemperature());
     // Serial.println(" C");
+/*
+    Serial.print("Temperature = ");
+    Serial.print(bme.readTemperature());
+    Serial.println(" *C");
 
+    Serial.print("Pressure = ");
 
+    Serial.print(bme.readPressure() / 100.0F);
+    Serial.println(" hPa");
+
+    Serial.print("Approx. Altitude = ");
+    Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
+    Serial.println(" m");
+
+    Serial.print("Humidity = ");
+    Serial.print(bme.readHumidity());
+    Serial.println(" %");
+    */
   }  // end do this only once each second
 
 
@@ -466,7 +502,7 @@ void loop() {
 
   if ((millis() % lastIntervalTime) >= MEASURE_INTERVAL) { //Is it time for a new measurement?
 
-    char dataString[20] = "";
+    //char dataString[20] = "";
     int count = 0;
     unsigned long rawTime;
     rawTime = now.unixtime();           // getTime();
@@ -524,8 +560,10 @@ void loop() {
 
     //get the values and setup the string we want to write to the file
     int sensor = analogRead(analogPin);
+ /*
     char timeStr[12];
     char sensorStr[6];
+
 
     ultoa(rawTime, timeStr, 10);
     itoa(sensor, sensorStr, 10);
@@ -533,6 +571,28 @@ void loop() {
     strcat(dataString, timeStr);
     strcat(dataString, ",");
     strcat(dataString, sensorStr);
+    strcat(dataString, ",");
+    strcat(dataString, char(bme.readTemperature()));
+    strcat(dataString, ",");
+    strcat(dataString, char(bme.readHumidity()));
+    strcat(dataString, ",");
+    strcat(dataString, bme.readPressure() / 100.0F));
+   */ 
+    String dataString = "";
+    dataString += String(rawTime);
+    dataString += ",";
+    dataString += String(sensor);
+    dataString += ",";
+    dataString += String(bme.readTemperature());
+    dataString += ",";
+    dataString += String(bme.readHumidity());
+    dataString += ",";
+    dataString += String((bme.readPressure() / 100.0F)); 
+ 
+
+
+
+       
     //Serial.print("timeStr "); Serial.println(timeStr);
     //Serial.print("rawTime "); Serial.println(rawTime);
     //open the file we'll be writing to.
