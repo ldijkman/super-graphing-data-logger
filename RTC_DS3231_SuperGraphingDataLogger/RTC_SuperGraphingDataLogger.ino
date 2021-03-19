@@ -48,11 +48,12 @@
 // webpage is overwritten to sdcard on sdcard on startup in setup
 // webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage  webpage
 const char Web_page[] PROGMEM = R"=====(
+
 <!DOCTYPE HTML>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="refresh" content="60">
+        <!--<meta http-equiv="refresh" content="60">-->
         <title>Super Graphing Data Logger! you are now inside my arduino mega 2560 with ethernet shield and SD-Card</title>
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -90,7 +91,7 @@ $(function () {
             },
     
             title: {
-                text: 'Light levels recorded by Arduino mega2560 with ethernet shield LDR lightsensor on analog A0'
+                text: 'Arduino mega2560 logs light LDR BME280 temperature, humidity, milibar'
             },
     
             subtitle: {
@@ -112,20 +113,23 @@ $(function () {
             },
     
             legend: {
-                enabled: false
+                enabled: true
             },
     
             tooltip: {
                 formatter: function() {
-                        return '<b>'+ this.series.name +'</b><br/>'+
-                        Highcharts.dateFormat('%H:%M:%S - %b %e, %Y', this.x) +': '+ this.y;
+                        return '<b>'+this.y + ' ' + this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%H:%M:%S - %e %b %Y', this.x);
                 }
+                
             },
     
             plotOptions: {
+             
                 series: {
                     cursor: 'pointer',
                     lineWidth: 1.0,
+                    
                     point: {
                         events: {
                             click: function() {
@@ -146,11 +150,19 @@ $(function () {
             },
     
             series: [{
-                name: 'Light Levels',
-                marker: {
-                    radius: 2
-                }
+             name: 'Light Levels',
+             marker: {radius: 4}      
+            },{
+             name: '°C Temperature',
+             marker: {radius: 4}
+            },{
+             name: '% Humidity',
+             marker: {radius: 4}
+            },{
+             name: 'Milibar',
+             marker: {radius: 4}
             }]
+          
         };
     
     
@@ -164,6 +176,9 @@ $(function () {
     
                 // set up the two data series
                 lightLevels = [];
+                Temperature = [];
+                Humidity = [];
+                Pressure = [];
     
             // inconsistency
             if (typeof csv !== 'string') {
@@ -182,11 +197,31 @@ $(function () {
                     date,
                     parseInt(line[1], 10)
                 ]);
+
+               Temperature.push([
+                   date,
+                  parseFloat(line[2], 10)
+               ]);
+
+               Humidity.push([
+                    date,
+                    parseFloat(line[3], 10)
+                ]);
+
+                Pressure.push([
+                   date,
+                    parseFloat(line[4], 10)
+                ]);
+               
                 
             });
     
-            options.series[0].data = lightLevels;
-    
+            options.series[0].data = lightLevels;   
+           options.series[1].data = Temperature;
+           options.series[2].data = Humidity;
+           options.series[3].data = Pressure;
+         
+           
             chart = new Highcharts.Chart(options);
         });
     });
@@ -219,16 +254,31 @@ document.getElementById("today").innerHTML ="<a href=\"HC.htm?file="+today.getDa
  <script>
 var timeleft = 60;
 var downloadTimer = setInterval(function(){
-  document.getElementById("progressBar").value = 60 - --timeleft;
-  if(timeleft <= 0)
+timeleft--;
+  document.getElementById("progressBar").value = 60-timeleft;
+  document.getElementById("CountDown").innerHTML = (timeleft);
+  if((timeleft)<=0){window.location.href = window.location.href;}
+
+if(timeleft <= 0) 
     clearInterval(downloadTimer);
 },1000);
 </script>
 <progress value="0" max="60" id="progressBar"style="height:12px;width:100%"> ></progress>
+<center><button id="myBtn" value="myvalue" onclick="myFunction()">Stop AutoReload</button><center>
+<p id="CountDown"></p>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("myBtn");
+  if (x.innerHTML == "Stop AutoReload") {
+    x.innerHTML = "Start AutoReload!";
+  } else {
+    x.innerHTML = "Stop AutoReload";
+  }
+}
+</script>
     </body>
 </html>
-
-
 )=====";
 
 // end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage  end webpage 
