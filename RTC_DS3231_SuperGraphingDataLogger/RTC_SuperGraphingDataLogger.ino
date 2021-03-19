@@ -258,7 +258,10 @@ timeleft--;
   document.getElementById("progressBar").value = 60-timeleft;
   document.getElementById("CountDown").innerHTML = (timeleft);
   if((timeleft)<=0){window.location.href = window.location.href;}
-
+  var x = document.getElementById("myBtn");
+  if (x.innerHTML == "Start AutoReload!") {
+    timeleft=60;
+  }
 if(timeleft <= 0) 
     clearInterval(downloadTimer);
 },1000);
@@ -674,43 +677,39 @@ void loop() {
       if (client.available()) {
         char c = client.read();
 
-        // If it isn't a new line, add the character to the buffer
-        if (c != '\n' && c != '\r') {
+        if (c != '\n' && c != '\r') {                              // If it isn't a new line, add the character to the buffer
           clientline[index] = c;
           index++;
-          // are we too big for the buffer? start tossing out data
-          if (index >= BUFSIZ)
-            index = BUFSIZ - 1;
-
-          // continue to read more data!
-          continue;
+          if (index >= BUFSIZ)                                     // are we too big for the buffer? start tossing out data
+            index = BUFSIZ - 1;          
+          continue;                                                // continue to read more data!
         }
 
-        // got a \n or \r new line, which means the string is done
-        clientline[index] = 0;
+        clientline[index] = 0;                                     // got a \n or \r new line, which means the string is done
 
-        // Print it out for debugging
-        Serial.println(clientline);
-
-        // Look for substring such as a request to get the root file
-        if (strstr(clientline, "GET / ") != 0) {
-          // send a standard http response header
+       
+        Serial.println(clientline);                                      // Print it out for debugging
+ 
+                                                                          // Look for substring such as a request to get the root file
+        if (strstr(clientline, "GET / ") != 0) {                          // strstr = Find the first occurrence of a string
+                                                                          // send a standard http response header
           HtmlHeaderOK(client);
-          // print all the data files, use a helper to keep it clean
+                                                                          // print all the data files, use a helper to keep it clean
           client.println("<h2>View data for the week of (dd-mm-yy):</h2>");
           ListFiles(client);
         }
-        else if (strstr(clientline, "GET /") != 0) {
-          // this time no space after the /, so a sub-file!
+        else if (strstr(clientline, "GET /") != 0) {                    // strstr = Find the first occurrence of a string
+                                                                        // this time no space after the /, so a sub-file!
           char *filename;
 
-          filename = strtok(clientline + 5, "?"); // look after the "GET /" (5 chars) but before
-          // the "?" if a data file has been specified. A little trick, look for the " HTTP/1.1"
-          // string and turn the first character of the substring into a 0 to clear it out.
+          filename = strtok(clientline + 5, "?");                       // strok = split str into tokens
+                                                                        // look after the "GET /" (5 chars) but before
+                                                                        // the "?" if a data file has been specified. A little trick, look for the " HTTP/1.1"
+                                                                        // string and turn the first character of the substring into a 0 to clear it out.
           (strstr(clientline, " HTTP"))[0] = 0;
 
-          // print the file we want
-          Serial.println(filename);
+          
+          Serial.println(filename);                                     // print the file we want
           File file = SD.open(filename, FILE_READ);
           if (!file) {
             HtmlHeader404(client);
@@ -735,8 +734,8 @@ void loop() {
 
         }
         else {
-          // everything else is a 404
-          HtmlHeader404(client);
+         
+          HtmlHeader404(client);                                               // everything else is a 404
         }
         break;
       }
