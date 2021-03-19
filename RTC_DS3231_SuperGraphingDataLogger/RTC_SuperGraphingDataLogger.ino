@@ -260,7 +260,7 @@ timeleft--;
   if((timeleft)<=0){window.location.href = window.location.href;}
   var x = document.getElementById("myBtn");
   if (x.innerHTML == "Start AutoReload!") {
-    timeleft=60;
+    timeleft=timeleft+1;
   }
 if(timeleft <= 0) 
     clearInterval(downloadTimer);
