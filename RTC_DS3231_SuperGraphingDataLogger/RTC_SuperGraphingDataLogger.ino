@@ -150,7 +150,7 @@ $(function () {
             },
     
             series: [{
-             name: 'Light Levels',
+             name: 'LDR Light Sensor',
              marker: {radius: 4}      
             },{
              name: '°C Temperature',
@@ -321,7 +321,7 @@ EthernetServer server(80);
 const int analogPin = 0;
 
 unsigned long lastIntervalTime = 0; //The time the last measurement occured.
-#define MEASURE_INTERVAL 10000     //10 seonds intervals between measurements (in ms)
+#define MEASURE_INTERVAL 30000     //30 seonds intervals between measurements (in ms)
 
 
 // How big our line buffer should be for sending the files over the ethernet.
@@ -652,6 +652,11 @@ void loop() {
 
 
 
+// do not understand next part yet
+// think it could / should  be simpler eassier to understand // do not understand next part yet
+// think it could / should  be simpler eassier to understand // do not understand next part yet
+// think it could / should  be simpler eassier to understand // do not understand next part yet
+// think it could / should  be simpler eassier to understand 
 
 
   char clientline[BUFSIZ];
