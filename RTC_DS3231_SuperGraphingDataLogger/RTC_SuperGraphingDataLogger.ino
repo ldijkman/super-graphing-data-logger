@@ -265,10 +265,10 @@ timeleft--;
 if(timeleft <= 0) 
     clearInterval(downloadTimer);
 },1000);
-</script>
+</script><center><label id="CountDown"></label>
 <progress value="0" max="60" id="progressBar"style="height:12px;width:100%"> ></progress>
-<center><button id="myBtn" value="myvalue" onclick="myFunction()">Stop AutoReload</button><center>
-<p id="CountDown"></p>
+<button id="myBtn" value="myvalue" onclick="myFunction()">Stop AutoReload</button><center>
+
 
 <script>
 function myFunction() {
