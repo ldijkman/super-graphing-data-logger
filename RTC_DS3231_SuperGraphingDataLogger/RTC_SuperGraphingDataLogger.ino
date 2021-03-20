@@ -472,7 +472,9 @@ void ListFiles(EthernetClient client) {
   client.println("Changed NTP time to i2c RTC DS3231 time for standalone use if there is no internet<br>");
   client.println("removed the eepromanything == just a new log file each day<br> ");
   client.println("added BME280 sensor for temperature humidity millibar only vissible in csv log text data for now<br> ");
-  client.println("");
+  client.print("<br><br>ip ");
+  client.print(client.remoteIP());
+  client.print("Copyright 2021 Dirk Luberth Dijkman Bangert 30 1619GJ Andijk The Netherlands");
 }
 
 
@@ -667,6 +669,8 @@ void loop() {
 
   EthernetClient client = server.available();
   if (client) {
+    Serial.print("visitors ip ");
+    Serial.println(client.remoteIP());
     // an http request ends with a blank line
     boolean current_line_is_blank = true;
 
