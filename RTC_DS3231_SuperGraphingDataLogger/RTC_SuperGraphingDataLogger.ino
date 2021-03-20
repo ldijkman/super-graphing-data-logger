@@ -54,6 +54,7 @@ const char Web_page[] PROGMEM = R"=====(
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <!--<meta http-equiv="refresh" content="60">-->
+        <meta name="copyright" content="Copyright 2021 Dirk Luberth Dijkman Bangert 30 1619GJ Andijk The Netherlands" />
         <title>Super Graphing Data Logger! you are now inside my arduino mega 2560 with ethernet shield and SD-Card</title>
 
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"
