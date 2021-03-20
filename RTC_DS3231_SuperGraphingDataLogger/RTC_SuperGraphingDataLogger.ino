@@ -474,7 +474,7 @@ void ListFiles(EthernetClient client) {
   client.println("added BME280 sensor for temperature humidity millibar only vissible in csv log text data for now<br> ");
   client.print("<br><br>ip ");
   client.print(client.remoteIP());
-  client.print("Copyright 2021 Dirk Luberth Dijkman Bangert 30 1619GJ Andijk The Netherlands");
+  client.print("<br>Copyright 2021 Dirk Luberth Dijkman Bangert 30 1619GJ Andijk The Netherlands");
 }
 
 
