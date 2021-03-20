@@ -476,6 +476,7 @@ void ListFiles(EthernetClient client) {
   client.print("<br><br>ip ");
   client.print(client.remoteIP());
   client.print("<br>Copyright 2021 Dirk Luberth Dijkman Bangert 30 1619GJ Andijk The Netherlands");
+  client.print("<br><a href=\"http://arduino.tk:8888\">http://arduino.tk:8888</a>");
 }
 
 
